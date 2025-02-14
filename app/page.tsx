@@ -1,7 +1,7 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Heart } from 'lucide-react';
-
+const LOVE_MUSIC_URL = "/audio-2.mp3";
 interface LoveNote {
   id: number;
   text: string;
@@ -11,7 +11,20 @@ const LoveLetter = () => {
   const [flapStage, setFlapStage] = useState<number>(0);
   const [currentNote, setCurrentNote] = useState<string | null>(null);
   const [letterStage, setLetterStage] = useState<number>(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  useEffect(() => {
+    audioRef.current = new Audio(LOVE_MUSIC_URL);
+    audioRef.current.loop = true; 
+  }, []);
+
+  const playMusic = () => {
+    if (audioRef.current) {
+      audioRef.current
+        .play()
+        .catch((error) => console.error('Audio playback failed:', error));
+    }
+  };
   const loveNotes: LoveNote[] = [
     { id: 1, text: "Valentine’s Day is beautiful, but you make every day feel special." },
     { id: 2, text: "The way you brighten my world isn’t tied to a single day." },
@@ -47,6 +60,7 @@ const LoveLetter = () => {
 
 
   const openEnvelope = (): void => {
+    playMusic()
     setFlapStage(1);
     setTimeout(() => {
       setFlapStage(2);
@@ -175,6 +189,10 @@ const LoveLetter = () => {
       >
         New Letter
       </button>
+      <audio loop={false} className='hidden' ref={audioRef}>
+        <source src={LOVE_MUSIC_URL} type="audio/mp3"  />
+        Your browser does not support the audio tag.
+      </audio>
     </div>
   );
 };
